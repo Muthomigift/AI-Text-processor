@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Text Processor</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 16px; }
+    textarea { width: 100%; height: 120px; padding: 8px; box-sizing: border-box; }
+    button { margin-top: 8px; padding: 8px 16px; cursor: pointer; }
+    #result { margin-top: 16px; white-space: pre-wrap; background: #f4f4f4; padding: 12px; border-radius: 6px; min-height: 40px; }
+  </style>
+</head>
+<body>
+  <h1>AI Text Processor</h1>
+  <textarea id="input" placeholder="Type something..."></textarea>
+  <br>
+  <button id="send">Send</button>
+  <div id="result"></div>
+
+  <script>
+    const button = document.getElementById("send");
+    const resultBox = document.getElementById("result");
+
+    button.addEventListener("click", async () => {
+      const text = document.getElementById("input").value;
+      resultBox.textContent = "Thinking...";
+      button.disabled = true;
+
+      try {
+        const res = await fetch("/api/process", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text })
+        });
+        const data = await res.json();
+        resultBox.textContent = data.result || data.error;
+      } catch (err) {
+        resultBox.textContent = "Something went wrong: " + err.message;
+      }
+
+      button.disabled = false;
+    });
+  </script>
+</body>
+</html>
